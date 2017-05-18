@@ -2,9 +2,12 @@ default:
 	make clean
 	make fs
 	
-fs: fileSys.o fs.o utils.o
-	g++ -o fsTerm fileSys.o fs.o utils.o
+fs: fileSys.o fs.o utils.o function.o
+	g++ -o fsTerm fileSys.o fs.o utils.o function.o
 
+function.o:
+	g++ -c function.cpp
+	
 fileSys.o:
 	g++ -c fileSys.cpp
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "includes/fs.h"
 #include "includes/utils.h"
+#include "includes/function.h"
 
 using namespace std;
 
@@ -27,8 +28,44 @@ void handle(string command) {
 		cout << " rm [fileName]: remove file with the fileName" << endl;
 		cout << " write [fileName] [content]: write content to file with the fileName" << endl;
 		cout << " read [fileName]: print the content of file with the fileName" << endl;
+	} else if(ncomm[0] == "format") {
+		format(curDir);
 	} else if(ncomm[0] == "mkdir") {
-		cout << "size:" + ncomm.size() << endl;
+		if(ncomm.size()==1) 
+			cout << "Command mkdir required a paramter [dirName]" << endl;
+		else 
+			mkdir(curDir, ncomm[1]);
+	} else if(ncomm[0] == "ls") {
+		ls(curDir);
+	} else if(ncomm[0] == "cd") {
+		if(ncomm.size()==1) 
+			cout << "Command cd required a paramter [dirName]" << endl;
+		else 
+			curDir = cd(curDir, ncomm[1]);
+	} else if(ncomm[0] == "touch") {
+		cout << ncomm.size() << endl;
+		if(ncomm.size()==1) 
+			cout << "Command touch required a paramter [fileName]" << endl;
+		else 
+			touch(curDir, ncomm[1]);
+	} else if(ncomm[0] == "rm") {
+		cout << ncomm.size() << endl;
+		if(ncomm.size()==1) 
+			cout << "Command rm required a paramter [fileName]" << endl;
+		else 
+			rm(curDir, ncomm[1]);
+	} else if(ncomm[0] == "write") {
+		cout << ncomm.size() << endl;
+		if(ncomm.size()<=2) 
+			cout << "Command write required two paramter [fileName] [content]" << endl;
+		else 
+			write(curDir, ncomm[1], ncomm[2]);
+	} else if(ncomm[0] == "read") {
+		cout << ncomm.size() << endl;
+		if(ncomm.size()==1) 
+			cout << "Command read required a paramter [fileName]" << endl;
+		else 
+			read(curDir, ncomm[1]);
 	} else 
 		cout << "unKnown Command" << endl;
 	
