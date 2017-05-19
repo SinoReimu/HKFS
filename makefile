@@ -1,15 +1,21 @@
-default:
+default: 
 	make clean
-	make fs
+	make fileSys
 	
-fs: fileSys.o fs.o utils.o function.o
-	g++ -o fsTerm fileSys.o fs.o utils.o function.o
+test: test.o fs.o
+	g++ -o testBench test.o fs.o
+	
+fileSys: utils.o function.o fileSys.o fs.o
+	g++ -g -o fsTerm fileSys.o fs.o utils.o function.o
+
+test.o:
+	g++ -c test.cpp
 
 function.o:
-	g++ -c function.cpp
+	g++ -g -c function.cpp
 	
 fileSys.o:
-	g++ -c fileSys.cpp
+	g++ -g -c fileSys.cpp
 
 fs.o:
 	g++ -c fs.cpp
@@ -17,6 +23,5 @@ fs.o:
 utils.o:
 	g++ -c utils.cpp
 	
-	
 clean:
-	rm fsTerm fileSys.o fs.o
+	rm *.o

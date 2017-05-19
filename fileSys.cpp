@@ -16,20 +16,52 @@ void handle(string command) {
 	vector<string> *comm = new vector<string>;
 	split(command, COMMAND_SPLIT, comm);
 	vector<string> ncomm = *comm;
+	cout << endl; //split command and output information
 	if(ncomm[0] == "exit") {
+		imgFile.seekg(0);
+		imgFile.write((char*)super, sizeof(SuperBlock));
+		imgFile.close();
 		cout << "bye~" << endl;
 		exit(0);
 	} else if (ncomm[0] == "help") {
-		cout << " format : format the disk area" << endl;
-		cout << " mkdir [dirName]: create a directory in current directory" << endl;
-		cout << " ls: list all file in current directory" << endl;
-		cout << " cd [dirName]: move current directory to another one " << endl;
-		cout << " touch [fileName]: create a file in current directory" << endl;
-		cout << " rm [fileName]: remove file with the fileName" << endl;
-		cout << " write [fileName] [content]: write content to file with the fileName" << endl;
-		cout << " read [fileName]: print the content of file with the fileName" << endl;
+		cout << "format : format the disk area" << endl;
+		cout << "mkdir [dirName]: create a directory in current directory" << endl;
+		cout << "ls: list all file in current directory" << endl;
+		cout << "cd [dirName]: move current directory to another one " << endl;
+		cout << "touch [fileName]: create a file in current directory" << endl;
+		cout << "rm [fileName]: remove file with the fileName" << endl;
+		cout << "write [fileName] [content]: write content to file with the fileName" << endl;
+		cout << "read [fileName]: print the content of file with the fileName" << endl;
+		cout << "diag view filesystem details info" << endl;
+	} else if (ncomm[0] == "diag"){
+		cout << "SuperBlock:" << endl;
+		cout << "    firstBlock:" << super->firstBlock<<endl;
+		cout << "    firstFCB:" << super->firstFCB<<endl;
+		cout << "    free FCB:" << super->freeFCBCount<<endl;
+		cout << "    free Block:" << super->freeBlockCount<<endl;
+		cout << endl << "reading first 10 FCB info" << endl;
+		for(int i=0; i<10; i++) {
+			int d;
+			FCB *fcb = new FCB;
+			imgFile.seekp(getFCBAddressFromNum(i));
+			imgFile.read((char*)fcb, sizeof(FCB));
+			cout << "FCB"<<i<<endl;
+			cout << "    used:" << (d=fcb->used)<<endl;
+			cout << "    name:" << fcb->filename <<endl;
+			cout << "    isDir:" << (d=fcb->isDir)<<endl;
+		}
+
+		cout << endl << "reading first 10 Block info" << endl;
+		for(int i=0; i<10; i++) {
+			int d;
+			BLOCK *block = new BLOCK;
+			imgFile.seekp(getBlockAddressFromNum(i));
+			imgFile.read((char*)block, sizeof(BLOCK));
+			cout << "BLOCK"<<i<<endl;
+			cout << "    used:" << (d=block->used) <<endl;
+		}
 	} else if(ncomm[0] == "format") {
-		format(curDir);
+		format();
 	} else if(ncomm[0] == "mkdir") {
 		if(ncomm.size()==1) 
 			cout << "Command mkdir required a paramter [dirName]" << endl;
@@ -68,7 +100,7 @@ void handle(string command) {
 			read(curDir, ncomm[1]);
 	} else 
 		cout << "unKnown Command" << endl;
-	
+	cout << endl; //split
 }
 
 void loop() {
@@ -91,9 +123,9 @@ int main(int argc, char ** argv) {
 		return 1;
 	}
 	
-	fstream file = init_disk(argv[1]);
+	init_disk(argv[1]);
 	
-	if(!file) {
+	if(!imgFile) {
 		cout << "termFile open error" << endl;
 		return 1;
 	}
