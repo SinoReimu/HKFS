@@ -6,8 +6,9 @@
 
 using namespace std;
 
-string COMMAND_SPLIT = " ";
+const string COMMAND_SPLIT = " ";
+const string PATH_SPLIT = "/";
 
-void split(string& s, string& delim,vector<string >* ret);
+void split(string& s, const string& delim,vector<string >* ret);
 
 #endif

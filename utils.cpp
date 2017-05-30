@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void split(string& s, string& delim, vector<string>* ret) {
+void split(string& s, const string& delim, vector<string>* ret) {
 	size_t last = 0;
 	size_t index=s.find_first_of(delim,last);
 	while (index!=string::npos)
@@ -13,7 +13,5 @@ void split(string& s, string& delim, vector<string>* ret) {
 		index=s.find_first_of(delim,last);
 	}
 	if (index-last>0)
-	{
 		ret->push_back(s.substr(last,index-last));
-	}
 }
