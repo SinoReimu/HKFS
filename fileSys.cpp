@@ -25,7 +25,7 @@ void handle(string command) {
 		exit(0);
 	} else if (ncomm[0] == "help") {
 		cout << "format : format the disk area" << endl;
-		cout << "mkdir [dirName]: create a directory in current directory" << endl;
+		cout << "mkdir [dirName] [mode(a append/else overwrite)]: create a directory in current directory" << endl;
 		cout << "ls: list all file in current directory" << endl;
 		cout << "cd [dirName]: move current directory to another one " << endl;
 		cout << "touch [fileName]: create a file in current directory" << endl;
@@ -90,8 +90,11 @@ void handle(string command) {
 		cout << ncomm.size() << endl;
 		if(ncomm.size()<=2) 
 			cout << "Command write required two paramter [fileName] [content]" << endl;
-		else 
-			write(curDir, ncomm[1], ncomm[2]);
+		else {
+			string mode = "";
+			if(ncomm.size()>3) mode = ncomm[3]; 
+			write(curDir, ncomm[1], ncomm[2], mode);
+		}
 	} else if(ncomm[0] == "read") {
 		cout << ncomm.size() << endl;
 		if(ncomm.size()==1) 

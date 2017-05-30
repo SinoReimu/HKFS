@@ -53,3 +53,30 @@ int mallocFCB() {
 	}
 	return -1;
 }
+
+int releaseBlock(int num) {
+	BLOCK *block = new BLOCK;
+	imgFile.seekp(getBlockAddressFromNum(num));
+	imgFile.read((char*)block, sizeof(BLOCK));
+	if(block->used==0) return -1;
+	block->used=0;
+	imgFile.seekg(getBlockAddressFromNum(num));
+	imgFile.write((char*)block, sizeof(BLOCK));
+	if(super->firstBlock>num) super->firstBlock = num;
+	super->freeBlockCount += 1;
+	return 0;
+}
+
+int releaseFCB(int num) {
+	FCB *block = new FCB;
+	imgFile.seekp(getFCBAddressFromNum(num));
+	imgFile.read((char*)block, sizeof(FCB));
+	if(block->used==0) return -1;
+	block->used=0;
+	imgFile.seekg(getFCBAddressFromNum(num));
+	imgFile.write((char*)block, sizeof(FCB));
+	if(super->firstFCB>num) super->firstFCB = num;
+	super->freeFCBCount += 1;
+	return 0;
+}
+

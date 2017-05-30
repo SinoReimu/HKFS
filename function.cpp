@@ -69,7 +69,7 @@ void rm (string curDir, string fileName) {
 
 }
 
-void write (string curDir, string fileName, string content) {
+void write (string curDir, string fileName, string content, string mode) {
 
 }
 
