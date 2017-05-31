@@ -22,6 +22,7 @@ int main (){
 		cout << "    used:" << (d=fcb->used)<<endl;
 		cout << "    name:" << fcb->filename <<endl;
 		cout << "    isDir:" << (d=fcb->isDir)<<endl;
+		cout << "    linkCount" << (d=fcb->linkCount)<<endl;
 	}
 
 	cout << endl << "reading first 10 Block info" << endl;

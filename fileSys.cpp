@@ -16,7 +16,7 @@ void handle(string command) {
 	vector<string> *comm = new vector<string>;
 	split(command, COMMAND_SPLIT, comm);
 	vector<string> ncomm = *comm;
-	cout << endl; //split command and output information
+	cout << endl; 
 	if(ncomm[0] == "exit") {
 		imgFile.seekg(0);
 		imgFile.write((char*)super, sizeof(SuperBlock));
@@ -75,19 +75,16 @@ void handle(string command) {
 		else 
 			curDir = cd(curDir, ncomm[1]);
 	} else if(ncomm[0] == "touch") {
-		cout << ncomm.size() << endl;
 		if(ncomm.size()==1) 
 			cout << "Command touch required a paramter [fileName]" << endl;
 		else 
 			touch(curDir, ncomm[1]);
 	} else if(ncomm[0] == "rm") {
-		cout << ncomm.size() << endl;
 		if(ncomm.size()==1) 
 			cout << "Command rm required a paramter [fileName]" << endl;
 		else 
 			rm(curDir, ncomm[1]);
 	} else if(ncomm[0] == "write") {
-		cout << ncomm.size() << endl;
 		if(ncomm.size()<=2) 
 			cout << "Command write required two paramter [fileName] [content]" << endl;
 		else {
@@ -96,7 +93,6 @@ void handle(string command) {
 			write(curDir, ncomm[1], ncomm[2], mode);
 		}
 	} else if(ncomm[0] == "read") {
-		cout << ncomm.size() << endl;
 		if(ncomm.size()==1) 
 			cout << "Command read required a paramter [fileName]" << endl;
 		else 

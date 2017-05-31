@@ -7,13 +7,16 @@ using namespace std;
 
 void format () {
 
+	cout << "sizeof FCB:" << sizeof(FCB) << endl;
+	cout << "sizeof BLOCK:" << sizeof(BLOCK) << endl;
 	super->freeBlockCount = max_block_count;
 	super->firstBlock = 0;
 	BLOCK* emptyBlock = new BLOCK;
 	emptyBlock->used = 0;
-	imgFile.seekg(block_offset);
-	for(int i=0; i<max_block_count; i++) 
+	for(int i=0; i<max_block_count; i++) {
+		imgFile.seekg(getBlockAddressFromNum(i));	
 		imgFile.write((char*)emptyBlock, sizeof(BLOCK));
+	}
 	cout << "Reset Blocks Finished, " << max_block_count << " blocks can be use." <<endl;
 	/*重置BLOCK*/
 	
@@ -21,9 +24,10 @@ void format () {
 	super->firstFCB = 0;
 	FCB* emptyFCB = new FCB;
 	emptyFCB->used = 0;
-	imgFile.seekg(fcb_offset);
-	for(int i=0; i<max_fcb_count; i++)
+	for(int i=0; i<max_fcb_count; i++) {		
+		imgFile.seekg(getFCBAddressFromNum(i));
 		imgFile.write((char*)emptyFCB, sizeof(FCB));
+	}
 	cout << "Reset FCBs Finished, " << max_fcb_count << " fcbs can be use." <<endl;
 	/*重置FCB 和 超级块*/
 	cout << "Reset super block over stored in address 0x0000" <<endl;
@@ -50,11 +54,10 @@ void format () {
 }
 
 void mkdir (string curDir, string dirName) {
-
 }
 
 void ls (string curDir) {
-
+	cout << "doing ls" << endl;
 }
 
 string cd (string curDir, string dirName) {

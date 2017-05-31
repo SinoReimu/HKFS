@@ -16,7 +16,7 @@ void init_disk(string fileName) {
 
 int getFCBAddressFromNum (int num) {
 	if(num > max_fcb_count) return -1;
-	return fcb_offset + num*4;
+	return fcb_offset + num*32;
 }
 
 int getBlockAddressFromNum (int num) {
