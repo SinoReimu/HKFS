@@ -1,11 +1,42 @@
 #include <string>
 #include <fstream>
+#include <cstring>
+#include <vector>
+#include <iostream>
 #include "includes/fs.h"
+#include "includes/utils.h"
 
 using namespace std;
 
 fstream imgFile;
 SuperBlock *super;
+
+int getFCBAddressFromDir(string curDir, int num)
+{
+    vector<string> *path = new vector<string>;
+    split(curDir, "/", path);
+    vector<string> npath = *path;
+    FCB *fcb = new FCB;
+    num = 0;
+    imgFile.seekp(getFCBAddressFromNum(num));
+    imgFile.read((char*)fcb, sizeof(FCB));
+    for (int i = 0; i < npath.size(); i++)
+    {
+        int ifFind = 0;
+        BLOCK *block = new BLOCK;
+        imgFile.seekp(getBlockAddressFromNum(fcb->infoBlock));
+        imgFile.read((char*)block, sizeof(BLOCK));
+        for (int j = 0, cnt = fcb->linkCount; j < 2 * cnt; j += 2)
+        {
+            num = ((unsigned char)block->data[j] << 8) + ((unsigned char)block->data[j + 1]);
+            imgFile.seekp(getFCBAddressFromNum(num));
+            imgFile.read((char*)fcb, sizeof(FCB));
+            if ((fcb->isDir) && (!strcmp(fcb->filename, npath[i].c_str()))) {ifFind = 1; break;}
+        }
+        if (!ifFind) return -1;
+    }
+    return num;
+}
 
 void init_disk(string fileName) {
 	imgFile = fstream(fileName, ios::binary|ios::in|ios::out);
