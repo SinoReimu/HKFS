@@ -60,4 +60,7 @@ int getFCBAddressFromNum (int num);
 int getBlockAddressFromNum (int num);
 int mallocBlock();
 int mallocFCB();
+int releaseBlock(int num);
+int releaseFCB(int num);
+int getFCBAddressFromDir(string curDir, int num = 0);
 #endif
