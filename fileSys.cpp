@@ -112,6 +112,7 @@ void loop() {
 		cout << curDir << " > ";
 		cin.getline(buffer, 40);
 		handle(string(buffer));
+		cout << endl;
 	}
 }
 

@@ -69,7 +69,7 @@ void mkdir (string curDir, string dirName) {
         idx = ((unsigned char)blockDir->data[j] << 8) + ((unsigned char)blockDir->data[j + 1]);
         imgFile.seekp(getFCBAddressFromNum(idx));
         imgFile.read((char*)fcb, sizeof(FCB));
-        if (!strcmp(fcb->filename, fileName.c_str()))
+        if (!strcmp(fcb->filename, dirName.c_str()))
         {
             cout << "Have the same name directory or file" << endl;
             return;
@@ -78,7 +78,7 @@ void mkdir (string curDir, string dirName) {
     FCB *fcbFile = new FCB; idxFCBFile = mallocFCB(); imgFile.seekp(getFCBAddressFromNum(idxFCBFile)); imgFile.read((char*)fcbFile, sizeof(FCB));
     BLOCK *blockFile = new BLOCK; idxBlockFile = mallocBlock(); imgFile.seekp(getBlockAddressFromNum(idxBlockFile)); imgFile.read((char*)blockFile, sizeof(BLOCK));
     fcbFile->used = 1;
-    for (int i = 0; i < fileName.length(); i++) fcbFile->filename[i] = fileName[i]; fcbFile->filename[fileName.length()] = 0;
+    for (int i = 0; i < dirName.length(); i++) fcbFile->filename[i] = dirName[i]; fcbFile->filename[dirName.length()] = 0;
     fcbFile->isDir = 1;fcbFile->fileSize = fcbFile->linkCount = 0;
     fcbFile->infoBlock = idxBlockFile;
     blockFile->used = 1;
@@ -89,11 +89,9 @@ void mkdir (string curDir, string dirName) {
     imgFile.seekg(getBlockAddressFromNum(idxBlockFile)); imgFile.write((char*)blockFile, sizeof(BLOCK));	
     imgFile.seekg(getFCBAddressFromNum(idxFCBDir)); imgFile.write((char*)fcbDir, sizeof(FCB));
     imgFile.seekg(getBlockAddressFromNum(fcbDir->infoBlock)); imgFile.write((char*)blockDir, sizeof(BLOCK));
-	cout << "option mkdir is over!" << endl;
 }
 
 void ls (string curDir) {
-	cout << "doing ls" << endl;
 	int idxFCBFile, idxBlockFile, idxFCBDir;
     idxFCBDir = getFCBAddressFromDir(curDir);
     FCB *fcbDir = new FCB; 
@@ -109,14 +107,14 @@ void ls (string curDir) {
         idx = ((unsigned char)blockDir->data[j] << 8) + ((unsigned char)blockDir->data[j + 1]);
         imgFile.seekp(getFCBAddressFromNum(idx));
         imgFile.read((char*)fcb, sizeof(FCB));
-		if(fcb->isDir = 1){
-				cout << fcb->filename << "  ........type:dir" << endl;
+
+		if(fcb->isDir == 1){
+				cout << fcb->filename << "/\t";
 		}
 		else{
-				cout << fcb->filename << "  ........type:file" << endl;
+				cout << fcb->filename << "\t";
 		}
     }
-	cout << "option ls is over!" << endl;
 }
 
 string cd(string curDir, string dirName)
@@ -245,13 +243,61 @@ void write (string curDir, string fileName, string content, string mode) {
 	{
 		cout << "This file does not exist or is a directory!" << endl;
 		return;
-	}        //鎵惧埌鏂囦欢鎵€鍦‵CB
+	}
 	imgFile.seekp(getBlockAddressFromNum(fcb1->infoBlock));
 	imgFile.read((char*)block1, sizeof(BLOCK));
 	BLOCK *block2 = new BLOCK;
 	BLOCK *block3 = new BLOCK;
+	if(fcb1->fileSize == 0)
+	{
+		fcb1->fileSize = content.length();
+		n = content.length() / 1023;
+		for(i = 0; i < n; i++)
+		{
+			block3_num = mallocBlock();
+			imgFile.seekp(getBlockAddressFromNum(block3_num));
+			imgFile.read((char*)block3, sizeof(BLOCK));
+			block3->used = 1;
+			block1->data[2 * fcb1->linkCount] = block3_num >> 8;
+    		block1->data[2 * fcb1->linkCount + 1] = block3_num & 0xff;
+			fcb1->linkCount++;
+			for(j = 0; j < 1023; j++)
+			{
+				block3->data[j] = content[j+i*1023];
+			}
+			imgFile.seekg(getBlockAddressFromNum(block3_num));
+			imgFile.write((char*)block3, sizeof(BLOCK));
+		}
+		if(content.length() % 1023 == 0)
+		{
+			imgFile.seekg(getFCBAddressFromNum(num));
+			imgFile.write((char*)fcb1, sizeof(FCB));
+			imgFile.seekg(getBlockAddressFromNum(fcb1->infoBlock));
+			imgFile.write((char*)block1, sizeof(BLOCK));
+			return;
+		}
+		block3_num = mallocBlock();
+		imgFile.seekp(getBlockAddressFromNum(block3_num));
+		imgFile.read((char*)block3, sizeof(BLOCK));
+		block3->used = 1;
+		block1->data[2 * fcb1->linkCount] = block3_num >> 8;
+    	block1->data[2 * fcb1->linkCount + 1] = block3_num & 0xff;
+		fcb1->linkCount++;
+		for(j = n * 1023, i = 0; j < content.length(); j++, i++)
+		{
+			block3->data[i] = content[j];
+		}
+		imgFile.seekg(getBlockAddressFromNum(block3_num));
+		imgFile.write((char*)block3, sizeof(BLOCK));
+		imgFile.seekg(getFCBAddressFromNum(num));
+		imgFile.write((char*)fcb1, sizeof(FCB));
+		imgFile.seekg(getBlockAddressFromNum(fcb1->infoBlock));
+		imgFile.write((char*)block1, sizeof(BLOCK));
+		return;
+	}
 	if(mode == "a")
 	{
+		
 		j = (fcb1->linkCount)*2-2;
 		last_bl_num = ((unsigned char)block1->data[j] << 8) + ((unsigned char)block1->data[j + 1]);
 		imgFile.seekp(getBlockAddressFromNum(last_bl_num));
@@ -465,7 +511,7 @@ void read (string curDir, string fileName) {
 	{
 		cout << "This file does not exist or is a directory!" << endl;
 		return;
-	}        //鎵惧埌鏂囦欢鎵€鍦‵CB
+	}
 	imgFile.seekp(getBlockAddressFromNum(fcb1->infoBlock));
 	imgFile.read((char*)block1, sizeof(BLOCK));
 	BLOCK *block2 = new BLOCK;
@@ -476,7 +522,7 @@ void read (string curDir, string fileName) {
         imgFile.read((char*)block2, sizeof(BLOCK));
         for(cnt = 0; cnt < 1023; cnt++)
         {
-        	cout << block2->data[cnt] << endl;
+        	cout << block2->data[cnt];
         }
     }
     m = 2 * (fcb1->linkCount - 1);
@@ -485,8 +531,9 @@ void read (string curDir, string fileName) {
     imgFile.read((char*)block2, sizeof(BLOCK));
     for(i = (fcb1->linkCount - 1) * 1023, j = 0; i < fcb1->fileSize; i++, j++)
     {
-    	cout << block2->data[j] << endl;
+    	cout << block2->data[j];
     }
+
     return;
 }
 

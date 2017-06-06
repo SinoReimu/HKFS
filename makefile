@@ -2,8 +2,8 @@ default:
 	make clean
 	make fileSys
 	
-test: test.o fs.o
-	g++ -o testBench test.o fs.o
+test: test.o fs.o utils.o
+	g++ -o testBench test.o fs.o utils.o
 	
 fileSys: utils.o function.o fileSys.o fs.o
 	g++ -g -o fsTerm fileSys.o fs.o utils.o function.o
